@@ -1,7 +1,7 @@
 PHP Grapon Library
 ======
 
-ガラポンTV(http://garapon.tv/)のAPIのラッパーライブラリです。
+[ガラポンTV](http://garapon.tv/)のAPIのラッパーライブラリです。
 
 ## 利用規約について
 
