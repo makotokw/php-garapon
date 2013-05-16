@@ -51,6 +51,18 @@ class Tv
     }
 
     /**
+     * @param string $path
+     * @return string
+     */
+    public function getUrl($path = '')
+    {
+        if ($this->port == 80) {
+            return sprintf('http://%s%s', $this->host, $path);
+        }
+        return sprintf('http://%s:%d%s', $this->host, $this->port, $path);
+    }
+
+    /**
      * @param string $host
      * @param int $port
      */
@@ -76,12 +88,12 @@ class Tv
 
     /**
      * httpClient Factory
-     * @return HttpClient
+     * @return \Guzzle\Http\Client
      */
     public function createHttpClient()
     {
         return new HttpClient(
-            sprintf('http://%s:%d/gapi/{version}', $this->host, $this->port),
+            $this->getUrl('/gapi/{version}'),
             array('version' => $this->apiVersionString)
         );
     }
@@ -102,6 +114,24 @@ class Tv
     public static function formatDateTime($timestamp = null)
     {
         return date('Y-m-d H:i:s', $timestamp);
+    }
+
+    /**
+     * @param $gtvid
+     * @return string
+     */
+    public function makeThumbnailUrl($gtvid)
+    {
+        return $this->getUrl('/thumbs/' . $gtvid);
+    }
+
+    /**
+     * @param $gtvid
+     * @return string
+     */
+    public function makeHttpLiveStreamingUrl($gtvid)
+    {
+        return $this->getUrl('/cgi-bin/play/m3u8.cgi?' . $gtvid . '-' . $this->getSessionId());
     }
 
     /**
@@ -244,6 +274,18 @@ class Tv
             $result = $response->json();
         }
         return $result;
+    }
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    public static function isStatusSuccessful($data)
+    {
+        if (array_key_exists('status', $data)) {
+            return $data['status'] == 1;
+        }
+        return false;
     }
 
     /**
