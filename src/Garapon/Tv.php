@@ -167,7 +167,6 @@ class Tv
             $status = intval(@$data['status']);
             $result = intval(@$data['login']);
             if ($status == 1 && $result == 1) {
-                $this->devId = @$data['dev_id'];
                 $this->sessionId = @$data['gtvsession'];
             }
             $this->firmwareVersion = @$data['version'];
@@ -182,7 +181,7 @@ class Tv
     {
         $gtvsession = $this->getSessionId();
         $dev_id = $this->getDevId();
-        if (!empty($dev_id)) {
+        if (empty($dev_id)) {
             unset($dev_id);
         }
 
