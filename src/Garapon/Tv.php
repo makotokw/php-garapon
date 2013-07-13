@@ -152,7 +152,7 @@ class Tv
     public function login($login, $md5pswd)
     {
         $response = $this->httpClient->post(
-            'auth',
+            'auth' . '?' . $this->getSessionQueryString(),
             null,
             array(
                 'type'    => 'login',
