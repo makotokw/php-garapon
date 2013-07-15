@@ -1,3 +1,5 @@
 <?php
 $loader = require_once __DIR__ . '/../vendor/autoload.php';
-$loader->add('Garapon\\', __DIR__);
+if (is_object($loader)) {
+    $loader->add('Garapon\\', __DIR__);
+}

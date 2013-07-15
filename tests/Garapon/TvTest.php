@@ -12,6 +12,7 @@ class TvTest extends \PHPUnit_Framework_TestCase
     public static function setUpBeforeClass()
     {
         self::$tv =  new Tv(GARAPON_TV_ADDRESS, GARAPON_TV_PORT);
+        self::$tv->setDevId(GARAPON_DEV_ID);
     }
 
     public function testAuth()

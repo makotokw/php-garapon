@@ -6,6 +6,7 @@
         <const name="GARAPON_TV_PORT" value="80"/>
         <const name="GARAPON_LOGINID" value="garapon"/>
         <const name="GARAPON_MD5PSWD" value="74b87337454200d4d33f80c4663dc5e5"/>
+        <const name="GARAPON_DEV_ID" value="garaponinc"/>
     </php>
     <testsuites>
         <testsuite name="Garapon Test Suite">

@@ -208,9 +208,9 @@ class Tv
         $result = 0;
         if ($response->isSuccessful()) {
             $data = $response->json();
+//            $status = intval(@$data['status']);
             $result = intval(@$data['logout']);
             if ($result == 1) {
-                $this->devId = '';
                 $this->sessionId = '';
             }
         }
