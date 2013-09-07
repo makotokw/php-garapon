@@ -1,4 +1,4 @@
-PHP Grapon Library
+PHP Garapon Library
 ======
 
 [ガラポンTV](http://garapon.tv/)のAPIのラッパーライブラリです。
