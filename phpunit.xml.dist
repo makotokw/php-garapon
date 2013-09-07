@@ -10,12 +10,12 @@
     </php>
     <testsuites>
         <testsuite name="Garapon Test Suite">
-            <directory>tests/Garapon/</directory>
+            <directory>tests/Makotokw/Garapon/</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist>
-            <directory suffix=".php">src/Grapon/</directory>
+            <directory suffix=".php">src/Makotokw/Garapon/</directory>
         </whitelist>
     </filter>
 </phpunit>

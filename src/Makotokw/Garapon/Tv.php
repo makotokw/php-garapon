@@ -1,6 +1,6 @@
 <?php
 
-namespace Garapon;
+namespace Makotokw\Garapon;
 
 use Guzzle\Http\Client as HttpClient;
 

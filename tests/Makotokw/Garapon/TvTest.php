@@ -1,6 +1,6 @@
 <?php
 
-namespace Garapon;
+namespace Makotokw\Garapon;
 
 class TvTest extends \PHPUnit_Framework_TestCase
 {
