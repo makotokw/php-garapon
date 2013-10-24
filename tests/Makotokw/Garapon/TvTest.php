@@ -29,7 +29,16 @@ class TvTest extends \PHPUnit_Framework_TestCase
     public function testSearch()
     {
         $tv = self::$tv;
-        $data = $tv->search();
+        $data = $tv->search(
+            array(
+                's' => 'e',
+                'genre0' => 5,
+                'genre1' => 2,
+                'sort'   => 'sta',
+                'video'  => 'all',
+
+            )
+        );
         $this->assertArrayHasKey('status', $data, 'no status');
         $this->assertEquals(1, $data['status'], 'status is not successful');
         $this->assertArrayHasKey('hit', $data, 'no hit');
@@ -43,16 +52,38 @@ class TvTest extends \PHPUnit_Framework_TestCase
     /**
      * @depends testSearch
      */
-    public function testFavorite(array $programs)
+    public function testSearchOne(array $programs)
     {
-        $this->markTestSkipped();
+        if (empty($programs)) {
+            return array();
+        }
 
         $tv = self::$tv;
-        $gtvid = $programs[0]['gtvid'];
-        $this->assertEquals(1, $tv->favorite($gtvid, 50), 'add fav');
-        $this->assertEquals(1, $tv->favorite($gtvid, 0), 'remove fav');
-        $this->assertEquals(0, $tv->favorite($gtvid, 0), 'remove nothing fav');
+        $data = $tv->search(array('gtvidlist' => $programs[rand(0, count($programs)-1)]['gtvid'], 'video' => 'all'));
+        $this->assertArrayHasKey('status', $data, 'no status');
+        $this->assertEquals(1, $data['status'], 'status is not successful');
+        $this->assertArrayHasKey('hit', $data, 'no hit');
+        $this->assertTrue($data['hit'] > 0, 'no hit');
+        $this->assertArrayHasKey('program', $data, 'no program');
+        $this->assertEquals(1, count($data['program']), 'no hit');
+
+        return $data['program'];
     }
+
+//    /**
+//     * @depends testSearchOne
+//     */
+//    public function testFavorite(array $programs)
+//    {
+//        $this->markTestSkipped();
+//
+//        $tv = self::$tv;
+//        $gtvid = $programs[0]['gtvid'];
+//        $this->assertEquals(1, $tv->favorite($gtvid, 50), 'add fav');
+//        $this->assertEquals(1, $tv->favorite($gtvid, 0), 'remove fav');
+//        $this->assertEquals(0, $tv->favorite($gtvid, 0), 'remove nothing fav');
+//    }
+//
 
     public function testChannel()
     {
