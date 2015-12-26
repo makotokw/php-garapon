@@ -21,7 +21,7 @@ composerでインストールできます。
 
 ## 必要環境
 
- * PHP5.3.3 以上
+ * PHP5.4 以上
  * [Composer](http://getcomposer.org/)
  * [Guzzle](http://guzzlephp.org/) に依存
  * curl, Symfony2 EventDispatcher.

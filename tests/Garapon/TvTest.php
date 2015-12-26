@@ -2,7 +2,7 @@
 
 namespace Makotokw\Garapon;
 
-class TvTest extends \PHPUnit_Framework_TestCase
+class TvTest extends TestCase
 {
     /**
      * @var Tv
@@ -11,19 +11,19 @@ class TvTest extends \PHPUnit_Framework_TestCase
 
     public static function setUpBeforeClass()
     {
-        self::$tv =  new Tv(GARAPON_TV_ADDRESS, GARAPON_TV_PORT);
-        self::$tv->setDevId(GARAPON_DEV_ID);
+        self::$tv =  new Tv($_ENV['GARAPON_TV_ADDRESS'], $_ENV['GARAPON_TV_PORT']);
+        self::$tv->setDevId($_ENV['GARAPON_DEV_ID']);
     }
 
     public function testAuth()
     {
         $tv = self::$tv;
-        $this->assertEquals(200, $tv->login(GARAPON_LOGINID, 'foo'), 'login error');
-        $this->assertEquals(1, $tv->login(GARAPON_LOGINID, GARAPON_MD5PSWD), 'login success');
+        $this->assertEquals(200, $tv->login($_ENV['GARAPON_LOGINID'], 'foo'), 'login error');
+        $this->assertEquals(1, $tv->login($_ENV['GARAPON_LOGINID'], $_ENV['GARAPON_MD5PSWD']), 'login success');
         $this->assertNotEmpty($tv->getSessionId(), 'get gtvsession');
         $this->assertEquals(1, $tv->logout(), 'logout success');
 
-        $this->assertEquals(1, $tv->login(GARAPON_LOGINID, GARAPON_MD5PSWD), 'login success');
+        $this->assertEquals(1, $tv->login($_ENV['GARAPON_LOGINID'], $_ENV['GARAPON_MD5PSWD']), 'login success');
     }
 
     public function testSearch()
@@ -51,6 +51,8 @@ class TvTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @depends testSearch
+     * @param array $programs
+     * @return array
      */
     public function testSearchOne(array $programs)
     {
@@ -59,7 +61,10 @@ class TvTest extends \PHPUnit_Framework_TestCase
         }
 
         $tv = self::$tv;
-        $data = $tv->search(array('gtvidlist' => $programs[rand(0, count($programs)-1)]['gtvid'], 'video' => 'all'));
+
+        $randomProgram = $programs[rand(0, count($programs)-1)];
+
+        $data = $tv->search(array('gtvid' => $randomProgram['gtvid']));
         $this->assertArrayHasKey('status', $data, 'no status');
         $this->assertEquals(1, $data['status'], 'status is not successful');
         $this->assertArrayHasKey('hit', $data, 'no hit');

@@ -70,7 +70,7 @@ class Tv
     {
         $this->host = $host;
         $this->port = $port;
-        if ($this->httpClient) { // replace
+        if ($this->httpClient) {
             $this->httpClient = $this->createHttpClient();
         }
     }
@@ -81,7 +81,7 @@ class Tv
     public function setApiVersionString($version)
     {
         $this->apiVersionString = $version;
-        if ($this->httpClient) { // replace
+        if ($this->httpClient) {
             $this->httpClient = $this->createHttpClient();
         }
     }
@@ -208,7 +208,6 @@ class Tv
         $result = 0;
         if ($response->isSuccessful()) {
             $data = $response->json();
-//            $status = intval(@$data['status']);
             $result = intval(@$data['logout']);
             if ($result == 1) {
                 $this->sessionId = '';

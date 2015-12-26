@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit bootstrap="tests/bootstrap.php" colors="true">
-    <php>
-        <const name="GARAPON_TV_ADDRESS" value="l92.168.11.22"/>
-        <const name="GARAPON_TV_PORT" value="80"/>
-        <const name="GARAPON_LOGINID" value="garapon"/>
-        <const name="GARAPON_MD5PSWD" value="74b87337454200d4d33f80c4663dc5e5"/>
-        <const name="GARAPON_DEV_ID" value="garaponinc"/>
-    </php>
     <testsuites>
         <testsuite name="Garapon Test Suite">
-            <directory>tests/</directory>
+            <directory>tests/Garapon/</directory>
         </testsuite>
     </testsuites>
     <filter>
