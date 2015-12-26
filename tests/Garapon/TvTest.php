@@ -30,14 +30,14 @@ class TvTest extends TestCase
     {
         $tv = self::$tv;
         $data = $tv->search(
-            array(
+            [
                 's' => 'e',
                 'genre0' => 5,
                 'genre1' => 2,
                 'sort'   => 'sta',
                 'video'  => 'all',
 
-            )
+            ]
         );
         $this->assertArrayHasKey('status', $data, 'no status');
         $this->assertEquals(1, $data['status'], 'status is not successful');
@@ -57,14 +57,14 @@ class TvTest extends TestCase
     public function testSearchOne(array $programs)
     {
         if (empty($programs)) {
-            return array();
+            return [];
         }
 
         $tv = self::$tv;
 
         $randomProgram = $programs[rand(0, count($programs)-1)];
 
-        $data = $tv->search(array('gtvid' => $randomProgram['gtvid']));
+        $data = $tv->search(['gtvid' => $randomProgram['gtvid']]);
         $this->assertArrayHasKey('status', $data, 'no status');
         $this->assertEquals(1, $data['status'], 'status is not successful');
         $this->assertArrayHasKey('hit', $data, 'no hit');

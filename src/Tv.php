@@ -94,7 +94,7 @@ class Tv
     {
         return new HttpClient(
             $this->getUrl('/gapi/{version}'),
-            array('version' => $this->apiVersionString)
+            ['version' => $this->apiVersionString]
         );
     }
 
@@ -131,7 +131,7 @@ class Tv
      */
     public function makeHttpLiveStreamingUrl($gtvid)
     {
-        return $this->getUrl('/cgi-bin/play/m3u8.cgi?' . $gtvid . '-' . $this->getSessionId());
+        return $this->getUrl('/cgi-bin/play/m3u8.cgi?' . $gtvid . '-' . $this->getSessionId() . '&dev_id = ' . $this->getDevId());
     }
 
     /**
@@ -154,11 +154,11 @@ class Tv
         $response = $this->httpClient->post(
             'auth' . '?' . $this->getSessionQueryString(),
             null,
-            array(
+            [
                 'type'    => 'login',
                 'loginid' => $login,
                 'md5pswd' => $md5pswd,
-            )
+            ]
         )->send();
 
         $result = 0;
@@ -200,9 +200,9 @@ class Tv
         $response = $this->httpClient->post(
             'auth' . '?' . $this->getSessionQueryString(),
             null,
-            array(
+            [
                 'type' => 'logout',
-            )
+            ]
         )->send();
 
         $result = 0;
@@ -220,7 +220,7 @@ class Tv
      * @param array $params
      * @return array
      */
-    public function search($params = array())
+    public function search($params = [])
     {
         $response = $this->httpClient->post(
             'search' . '?' . $this->getSessionQueryString(),
@@ -264,7 +264,7 @@ class Tv
         $response = $this->httpClient->post(
             'channel' . '?' . $this->getSessionQueryString(),
             null,
-            array()
+            []
         )->send();
 
         $result = false;
