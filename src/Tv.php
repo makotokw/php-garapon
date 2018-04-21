@@ -65,6 +65,7 @@ class Tv
     /**
      * @param string $host
      * @param int $port
+     * @return Tv
      */
     public function setHostAddressAndPort($host, $port = 80)
     {
@@ -73,10 +74,12 @@ class Tv
         if ($this->httpClient) {
             $this->httpClient = $this->createHttpClient();
         }
+        return $this;
     }
 
     /**
      * @param $version
+     * @return Tv
      */
     public function setApiVersionString($version)
     {
@@ -84,6 +87,7 @@ class Tv
         if ($this->httpClient) {
             $this->httpClient = $this->createHttpClient();
         }
+        return $this;
     }
 
     /**
@@ -131,7 +135,7 @@ class Tv
      */
     public function makeHttpLiveStreamingUrl($gtvid)
     {
-        return $this->getUrl('/cgi-bin/play/m3u8.cgi?' . $gtvid . '-' . $this->getSessionId() . '&dev_id = ' . $this->getDevId());
+        return $this->getUrl('/cgi-bin/play/m3u8.cgi?' . $gtvid . '-' . $this->getSessionId() . '&dev_id=' . $this->getDevId());
     }
 
     /**
@@ -288,10 +292,12 @@ class Tv
 
     /**
      * @param string $devId
+     * @return Tv
      */
     public function setDevId($devId)
     {
         $this->devId = $devId;
+        return $this;
     }
 
     /**
