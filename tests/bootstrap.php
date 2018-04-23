@@ -12,5 +12,3 @@ $dotenv->required(
         'GARAPON_DEV_ID'
     ]
 );
-
-Makotokw\Garapon\TestCase::$dotenv = $dotenv;

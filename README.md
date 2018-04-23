@@ -21,10 +21,8 @@ composerでインストールできます。
 
 ## 必要環境
 
- * PHP5.4 以上
- * [Composer](http://getcomposer.org/)
- * [Guzzle](http://guzzlephp.org/) に依存
- * curl, Symfony2 EventDispatcher.
+ * PHP5.5 以上
+ * [Guzzle](https://github.com/guzzle/guzzle) 6に依存
 
 ## ライセンス
 

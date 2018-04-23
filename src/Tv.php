@@ -2,10 +2,13 @@
 
 namespace Makotokw\Garapon;
 
-use Guzzle\Http\Client as HttpClient;
+use Makotokw\Garapon\Exception\GaraponException;
 
 class Tv
 {
+    /**
+     * @var string
+     */
     protected $apiVersionString;
 
     /**
@@ -29,11 +32,6 @@ class Tv
     protected $devId;
 
     /**
-     * @var string
-     */
-    protected $sessionId;
-
-    /**
      * @var HttpClient
      */
     protected $httpClient;
@@ -45,8 +43,8 @@ class Tv
      */
     public function __construct($host, $port = 80, $apiVersionString = 'v3')
     {
-        $this->setHostAddressAndPort($host, $port);
-        $this->setApiVersionString($apiVersionString);
+        $this->setHostAddressAndPort($host, $port)
+             ->setApiVersionString($apiVersionString);
         $this->httpClient = $this->createHttpClient();
     }
 
@@ -54,7 +52,7 @@ class Tv
      * @param string $path
      * @return string
      */
-    public function getUrl($path = '')
+    public function makeUrl($path = '')
     {
         if ($this->port == 80) {
             return sprintf('http://%s%s', $this->host, $path);
@@ -92,14 +90,11 @@ class Tv
 
     /**
      * httpClient Factory
-     * @return \Guzzle\Http\Client
+     * @return HttpClient
      */
-    public function createHttpClient()
+    protected function createHttpClient()
     {
-        return new HttpClient(
-            $this->getUrl('/gapi/{version}'),
-            ['version' => $this->apiVersionString]
-        );
+        return new HttpClient($this->makeUrl('/gapi/') . $this->apiVersionString . '/');
     }
 
     /**
@@ -126,7 +121,7 @@ class Tv
      */
     public function makeThumbnailUrl($gtvid)
     {
-        return $this->getUrl('/thumbs/' . $gtvid);
+        return $this->makeUrl('/thumbs/' . $gtvid);
     }
 
     /**
@@ -135,12 +130,14 @@ class Tv
      */
     public function makeHttpLiveStreamingUrl($gtvid)
     {
-        return $this->getUrl('/cgi-bin/play/m3u8.cgi?' . $gtvid . '-' . $this->getSessionId() . '&dev_id=' . $this->getDevId());
+        return $this->makeUrl(
+            '/cgi-bin/play/m3u8.cgi?' . $gtvid . '-' . $this->httpClient->getSessionId() . '&dev_id=' . $this->getDevId()
+        );
     }
 
     /**
-     * @param $loginId
-     * @param $password
+     * @param string $loginId
+     * @param string $password
      * @return int
      */
     public function loginByRawPassword($loginId, $password)
@@ -149,92 +146,64 @@ class Tv
     }
 
     /**
-     * @param $login
-     * @param $md5pswd
-     * @return int
+     * @param string $login
+     * @param string $md5pswd
+     * @return int ResultCode
      */
     public function login($login, $md5pswd)
     {
-        $response = $this->httpClient->post(
-            'auth' . '?' . $this->getSessionQueryString(),
-            null,
-            [
-                'type'    => 'login',
-                'loginid' => $login,
-                'md5pswd' => $md5pswd,
-            ]
-        )->send();
-
-        $result = 0;
-        if ($response->isSuccessful()) {
-            $data = $response->json();
-            $status = intval(@$data['status']);
-            $result = intval(@$data['login']);
-            if ($status == 1 && $result == 1) {
-                $this->sessionId = @$data['gtvsession'];
+        $resultCode = LoginResultCode::ERROR;
+        try {
+            $data = $this->httpClient->post(
+                'auth',
+                [
+                    'type' => 'login',
+                    'loginid' => $login,
+                    'md5pswd' => $md5pswd,
+                ]
+            );
+            $statusCode = intval(@$data['status']);
+            if (isset($data['login'])) {
+                $resultCode = intval(@$data['login']);
             }
             $this->firmwareVersion = @$data['version'];
+        } catch (GaraponException $e) {
         }
-        return $result;
+        return $resultCode;
     }
 
     /**
-     * @return string
-     */
-    public function getSessionQueryString()
-    {
-        $gtvsession = $this->getSessionId();
-        $dev_id = $this->getDevId();
-        if (empty($dev_id)) {
-            unset($dev_id);
-        }
-
-        return http_build_query(
-            compact('gtvsession', 'dev_id'),
-            null,
-            '&'
-        );
-    }
-
-    /**
-     * @return int
+     * @return int LogoutResultCode
      */
     public function logout()
     {
-        $response = $this->httpClient->post(
-            'auth' . '?' . $this->getSessionQueryString(),
-            null,
-            [
-                'type' => 'logout',
-            ]
-        )->send();
-
-        $result = 0;
-        if ($response->isSuccessful()) {
-            $data = $response->json();
-            $result = intval(@$data['logout']);
-            if ($result == 1) {
-                $this->sessionId = '';
+        $resultCode = LogoutResultCode::ERROR;
+        try {
+            $data = $this->httpClient->post(
+                'auth',
+                [
+                    'type' => 'logout',
+                ]
+            );
+            $statusCode = intval(@$data['status']);
+            if (isset($data['logout'])) {
+                $resultCode = intval(@$data['logout']);
             }
+        } catch (GaraponException $e) {
         }
-        return $result;
+        return $resultCode;
     }
 
     /**
      * @param array $params
-     * @return array
+     * @return false|array
      */
     public function search($params = [])
     {
-        $response = $this->httpClient->post(
-            'search' . '?' . $this->getSessionQueryString(),
-            null,
-            $params
-        )->send();
-
         $result = false;
-        if ($response->isSuccessful()) {
-            $result = $response->json();
+        try {
+            $result = $this->httpClient->post('search', $params);
+        } catch (GaraponException $e) {
         }
         return $result;
     }
@@ -246,18 +215,13 @@ class Tv
      */
     public function favorite($gtvid, $rank)
     {
-        $response = $this->httpClient->post(
-            'favorite' . '?' . $this->getSessionQueryString(),
-            null,
-            compact('gtvid', 'rank')
-        )->send();
-
-        $status = -1;
-        if ($response->isSuccessful()) {
-            $data = $response->json();
-            $status = intval(@$data['status']);
+        $statusCode = StatusCode::ERROR;
+        try {
+            $data = $this->httpClient->post('favorite', compact('gtvid', 'rank'));
+            $statusCode = intval(@$data['status']);
+        } catch (GaraponException $e) {
         }
-        return $status;
+        return $statusCode;
     }
 
     /**
@@ -265,29 +229,12 @@ class Tv
      */
     public function channel()
     {
-        $response = $this->httpClient->post(
-            'channel' . '?' . $this->getSessionQueryString(),
-            null,
-            []
-        )->send();
-
         $result = false;
-        if ($response->isSuccessful()) {
-            $result = $response->json();
+        try {
+            $result = $this->httpClient->post('channel', []);
+        } catch (GaraponException $e) {
         }
         return $result;
-    }
-
-    /**
-     * @param array $data
-     * @return bool
-     */
-    public static function isStatusSuccessful($data)
-    {
-        if (array_key_exists('status', $data)) {
-            return $data['status'] == 1;
-        }
-        return false;
     }
 
     /**
@@ -297,6 +244,7 @@ class Tv
     public function setDevId($devId)
     {
         $this->devId = $devId;
+        $this->httpClient->setDevId($devId);
         return $this;
     }
 
@@ -313,14 +261,6 @@ class Tv
      */
     public function getSessionId()
     {
-        return $this->sessionId;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasSessionId()
-    {
-        return !empty($this->sessionId);
+        return $this->httpClient->getSessionId();
     }
 }
